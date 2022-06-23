@@ -1,0 +1,10 @@
+CardSector=2
+MatchCode=87654321
+CardKeyCode=A0A1A2A3A4A5
+CalCardKey=8765432187654321
+
+
+
+
+
+

@@ -1,0 +1,64 @@
+
+代码结构：
+1) 主程序app.go, 出厂，现场绑定，解绑业务流程 writeplateprocess.go
+2) rewrCardTask.c 读写卡业务
+3) sqliteTask.c 配置数据库，菜单数据库
+4) sqliteTask.c 读写盘线程任务, 发送数据到qt进程通讯消息队列, 接收qt信息进程通讯消息队列, aws iot 任务
+5) awsIotTask.c 亚马逊IOT SHADOW 
+6) bindTask.c 通过手机配置wifi
+7) msgTask.c 消息队列用于跟qt通讯
+8) cJSON.c cString.c byteconversion.go 辅助函数
+9) httpclient.go httpjson跟美餐后台通讯获取菜单绑定初始化等
+
+
+菜单更新业务流程：
+1) C代码 AWS线程 收到需要更新菜单的指令，将新的菜单版本信息写入配置数据库new_menu_ver字段
+2) golang主业务流程定时读取配置数据库，如果新的版本信息（new_menu_ver）大于当前菜单版本（menu_ver），去美餐后台拉去新的菜单，
+    更新完成将配置数据库当前菜单字段（menu_ver）updata 成新的菜单版本
+3) golang更新完成后调用C代码aws_iot_shadow_update接口上报菜单已更新完成信息到IOT平台
+
+
+网络状态判断：
+1) 写盘器上电后，调用aws_iot_shadow_get();获取shadow状态成功，在回调函数(GetShadowStatusCallback)里面发送联网成功指令到QT；
+2) AWS IOT 设置成断网重连，回调函数(disconnectCallbackHandler)里面判断网络断开并发送断网指令到QT
+3) 网络断开后，定时调用aws_iot_shadow_get();直到回调函数(GetShadowStatusCallback)里面联网成功，停止定时获取任务
+
+
+自动重连失败原因：
+AWS IOT 重连时私钥的路径会被改动；暂时的解决方案，将私钥路径写死！！
+更改位置 ：AWS-IOT-DEVICE-SDK-EMBEDDED-C (network_mbedtls_wrapper.c)  153行 部分代码如下：
+/***************************************************************************************************************/
+// ad by lc 自动重连的时候 私钥地址被破坏，重新赋值
+char CurrentWD[200];
+getcwd(CurrentWD, sizeof(CurrentWD));
+snprintf(pNetwork->tlsConnectParams.pDevicePrivateKeyLocation,200, "%s/%s/%s", CurrentWD, "certs", "privkey.pem");
+/****************************************************************************************************************/
+
+
+写盘器各个状态的管理：
+1) AWS IOT (awsIotTask.c) 跟各个业务分开管理，AWS IOT 里面检测到设备状态，菜单版本有变化后更改配置数据库里面响应字段的状态；
+   主业务流程(writeplateprocess.go)里面定时读取配置数据库里面各个字段的状态，根据当前字段的状态做相应的业务处理
+
+开机或者下次断网重连后需要的操作：
+1) getshadow成功后，上报当前的固件版本（romVersion）及当前的菜单版本（menuUpdateTime）
+
+
+
+
+修改记录：
+1) 修改菜单更新进度，用“dishes”的个数来判断更新进度发送到QT   2021-08-20
+
+2) 固件更新流程:
+接受完固件包->解压固件包->运行固件包里面的脚本(重启新的qt程序)->qt程序通过消息队列发送重启指令到golang->golang重启后读取配置数据库软件版本备份进行比较，通过后上报IOT固件更新的结果
+->上报成功后消息队列发送固件更新成功到QT，QT显示固件更新成功界面
+
+3) 变砖拯救机制: 2021-09-28
+    1) golang 程序启动写入进程监控数据库process_protection.db golang_run字段 "ok"
+    2) QT 程序启动写入进程监控数据库process_protection.db qt_run字段 "ok"
+        writeplateProcessProtrction程序启动监控golang跟QT进程的运行状态
+    3) writeplateProcessProtrction程序读取process_protection.db数据库golang_run, qt_run字段是否都是 "ok"
+    4) 如果其中之1不是"ok", 运行/home/meican/writeDiskAppBakup里面的备份程序
+
+4) 修改固件更新完成后，上报iot新的固件版本   2021-10-26
+
+5) 修改解绑指令header去掉Authorization     2021-11-09

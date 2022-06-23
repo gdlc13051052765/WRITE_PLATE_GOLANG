@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/home/mc_shell/wifi_connect.sh 
+source /etc/profile
+sleep 3
+/home/mc_shell/app_start.sh  

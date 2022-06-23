@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "debug_print.h": "c",
+        "rewrcard.h": "c",
+        "aws_iot_error.h": "c",
+        "aws_iot_config.h": "c",
+        "aws_iot_log.h": "c",
+        "aws_iot_version.h": "c",
+        "aws_iot_mqtt_client_interface.h": "c",
+        "aws_iot_shadow_interface.h": "c",
+        "cjson.h": "c",
+        "aws_iot_jobs_interface.h": "c",
+        "cantask.h": "c"
+    }
+}

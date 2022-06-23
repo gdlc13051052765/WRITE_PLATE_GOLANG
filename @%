@@ -1,0 +1,2 @@
+CGO_ENABLED=1 GOOS=linux GOARCH=arm GOARM=5 CC=arm-linux-gnueabihf-gcc go build
+scp -r golang root@192.168.3.58:/home/meican
