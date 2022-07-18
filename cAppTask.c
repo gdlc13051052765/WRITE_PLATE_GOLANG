@@ -129,12 +129,12 @@ static void *aws_iot_monitor_thread(void *args)
 	while(1) 
 	{
 		debug_print("iotStatus = %d \n",iotStatus);
-    	pthread_mutex_lock(&mtx);
-		while(!iotThreadStatus)
-		{
-			pthread_cond_wait(&cond, &mtx);
-		}
-		pthread_mutex_unlock(&mtx);
+    	// pthread_mutex_lock(&mtx);
+		// while(!iotThreadStatus)
+		// {
+		// 	pthread_cond_wait(&cond, &mtx);
+		// }
+		// pthread_mutex_unlock(&mtx);
 		
 		switch(iotStatus)
 		{

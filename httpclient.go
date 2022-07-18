@@ -852,7 +852,7 @@ func jsonObjectParse(f interface{}, lev int) {
 ==================================================================================*/
 func write_plate_http_get_menu(tokenUrl string) error {
 	result := make(map[string]interface{})
-	C.set_stop_write_palte_status() //菜单更新时停止写盘
+	//C.set_stop_write_palte_status() //菜单更新时停止写盘
 	str1 := strconv.Itoa(deviceMsg.RestaurantID)
 	urlapi := fmt.Sprintf("/admin/restaurant/%s/ePlateWriterDishes", str1)
 	//urlapi := "/admin/restaurant/:restaurantID/ePlateWriterDishes"

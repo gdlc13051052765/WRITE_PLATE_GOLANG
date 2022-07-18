@@ -400,6 +400,10 @@ int receive_qt_msg_data_task(void)
       /**************QT 发送指令到 golang**************************/
       case WRPLATE_DATA_CMD ://写盘信息命令 0x01
         memcpy(&food_id,ckxmsg.mtext+2,4);
+        if(food_id==0)
+        {
+          return;
+        }
         debug_print("food_id = %d \n",food_id);
         sqlite_write_food_menu_db(context,food_id,0);
         mSndMsg.datalen = 3;

@@ -41,7 +41,7 @@ var posDevstr _DevMsgCon
 var backUpAppFlag bool = false //true 编译备份程序
 // var version string = "writeTest.0.0.23"
 // thomas yang begin
-var version string = "MCT_DM2_0.0.5"
+var version string = "MCT_DM2_0.0.15"
 
 // thomas yang end
 //var version string = "TestTest.0.0.1"

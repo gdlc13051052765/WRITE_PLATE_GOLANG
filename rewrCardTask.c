@@ -482,8 +482,8 @@ int nfc_write_plate_task(void)
 	  return;
   }
   //获取写盘器状态非工作状态停止写盘
-  if(get_aws_iot_dev_status() != C_SITE_BIND_OK_STATUS)
-  	return;
+  // if(get_aws_iot_dev_status() != C_SITE_BIND_OK_STATUS)
+  // 	return;
   //获取是否停止写盘状态
   if(!get_stop_write_palte_status())//收到停止写盘命令停止写盘
   	return;
@@ -584,15 +584,15 @@ int nfc_write_plate_task(void)
 				Write_Data[2] = dishMsg.dishid >> 2;
 				Write_Data[3] = dishMsg.dishid << 6;
 			  //已经写入无需再写
-        if(!(memcmp(Write_Data, block_buff_Read, 4))) {
-          debug_print("write block have ok \n");
-          sndMsg.data[0] = WRITEPLATE_OK;//
-          //qt_push_data_to_msg(sndMsg);//发送写盘状态到发送队列
-		      send_data_to_qt_direct(sndMsg);
-          writePlataStatus = 2;//跳转到取走标签状态机
-		  		beep_open(1);
-          return WRITEPLATE_OK;
-        }
+        // if(!(memcmp(Write_Data, block_buff_Read, 4))) {
+        //   debug_print("write block have ok \n");
+        //   sndMsg.data[0] = WRITEPLATE_OK;//
+        //   //qt_push_data_to_msg(sndMsg);//发送写盘状态到发送队列
+		    //   send_data_to_qt_direct(sndMsg);
+        //   writePlataStatus = 2;//跳转到取走标签状态机
+		  	// 	beep_open(1);
+        //   return WRITEPLATE_OK;
+        // }
         //写餐品ID信息到block
         if(!(rfal_write_single_block(tag[i].uid, 2, Write_Data, 4))) {
           debug_print("write block ok \n");
@@ -604,6 +604,7 @@ int nfc_write_plate_task(void)
           writePlataStatus = 2;//跳转到取走标签状态机
 		    	beep_open(1);
 					rfal_write_single_block(tag[i].uid, 3, "\x00\x00\x00\x00", 4);
+					writePlataStatus = 2;//跳转到取走标签状态机
           return WRITEPLATE_OK;//写盘信息成功
         } else {//写盘信息失败
           debug_print("write block fail \n");
@@ -627,11 +628,11 @@ int nfc_write_plate_task(void)
         usleep(POLL_LABEL_TIMEST);//延时30ms
 		  	debug_print("remove total tag number = %d \n", tag_num);
       }
-      for(i=0; i<filterNum; i++) //多次读取标签的个数不一致返回重新读标签
-			{
-      	if(tagnumbak[i] != tag_num)
-      		return;
-      }
+      // for(i=0; i<filterNum; i++) //多次读取标签的个数不一致返回重新读标签
+			// {
+      // 	if(tagnumbak[i] != tag_num)
+      // 		return;
+      // }
       if(!tag_num) {//标签已取走
         sndMsg.datalen = 0x03;
         sndMsg.cmd = WRPLATE_REMOVE_CMD;
@@ -640,6 +641,15 @@ int nfc_write_plate_task(void)
 		    send_data_to_qt_direct(sndMsg);
         writePlataStatus = 0;
       }  
+      // else {
+      //   sleep(2);
+      //   sndMsg.datalen = 0x03;
+      //   sndMsg.cmd = WRPLATE_REMOVE_CMD;
+		  //   sndMsg.data[0] = 0;
+      //   //qt_push_data_to_msg(sndMsg);//发送标签离场指令到发送队列
+		  //   send_data_to_qt_direct(sndMsg);
+      //   writePlataStatus = 0;
+      // }
     break;
   }
   return WRITEPLATE_OK;

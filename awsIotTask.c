@@ -104,9 +104,9 @@ void reboot_golang(void)
 {
   char logbuf[100];
 
-  sprintf(logbuf,"%s","golang 重启");
-  write_plate_write_IOT_log(logbuf);
-  system("/home/meican/rebootgolang.sh");
+  // sprintf(logbuf,"%s","golang 重启");
+  // write_plate_write_IOT_log(logbuf);
+  // system("/home/meican/rebootgolang.sh");
 }
 
 static void reboot_qt(void)
@@ -639,6 +639,7 @@ static int parsePloadJSON(const char * const monitor)
             {
               devMsg.status = C_FACTORY_BIND_OK_STATUS;
               sqlite_update_dev_status_config_db(devMsg.status);//修改配置数据库设备状态
+              debug_print("sn 需要更新 rebootQt\n");
               system("/home/meican/rebootQt.sh");//
             }
           }   
@@ -1509,6 +1510,7 @@ int write_plate_aws_iot_shadow_report_restaurantID(int64_t id)
 * 创建时间： 2021-06-11 
 ==========================================================================================*/
 int64_t iot_disconnect_time_bak = 0;
+extern int iotStatus ;
 int write_plate_aws_iot_shadow_task(void) 
 {
   IoT_Error_t rc = FAILURE;
@@ -1569,7 +1571,8 @@ int write_plate_aws_iot_shadow_task(void)
       getShadowFlag = true;
       sprintf(logbuf,"%s","IOT 重连超时 golang 重启");
       write_plate_write_IOT_log(logbuf);
-      system("/home/meican/rebootgolang.sh");
+      iotStatus = 1;
+     // system("/home/meican/rebootgolang.sh");
     }
   }
   sleep(1);
