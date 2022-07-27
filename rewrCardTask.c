@@ -641,15 +641,15 @@ int nfc_write_plate_task(void)
 		    send_data_to_qt_direct(sndMsg);
         writePlataStatus = 0;
       }  
-      // else {
-      //   sleep(2);
-      //   sndMsg.datalen = 0x03;
-      //   sndMsg.cmd = WRPLATE_REMOVE_CMD;
-		  //   sndMsg.data[0] = 0;
-      //   //qt_push_data_to_msg(sndMsg);//发送标签离场指令到发送队列
-		  //   send_data_to_qt_direct(sndMsg);
-      //   writePlataStatus = 0;
-      // }
+    //   else {
+    //     sleep(2);
+    //     sndMsg.datalen = 0x03;
+    //     sndMsg.cmd = WRPLATE_REMOVE_CMD;
+	// 	    sndMsg.data[0] = 0;
+    //     //qt_push_data_to_msg(sndMsg);//发送标签离场指令到发送队列
+	// 	    send_data_to_qt_direct(sndMsg);
+    //     writePlataStatus = 0;
+    //   }
     break;
   }
   return WRITEPLATE_OK;

@@ -308,11 +308,16 @@ static void iot_next_job_callback_handler(AWS_IoT_Client *pClient, char *topicNa
           //清空进程保护数据库
           sqlite_update_process_protection_db_null();
           //读取软件版本号写入配置数据库临时软件版本字段
-          if(sqlite_update_versionBak_config_db(jobId) == 0xff) {//已是最新版本直接回复IOT固件更新成功
-            OTA_UPDATE_STATUS = true;
-            updateRequest.status = JOB_EXECUTION_SUCCEEDED;
-            updateRequest.statusDetails = "{\"exampleDetail\":\"a value appropriate for your successful job\"}";
-          } else {
+          if(sqlite_update_versionBak_config_db(jobId) == 0xff) 
+          {
+          //已是最新版本直接回复IOT固件更新成功
+          //   OTA_UPDATE_STATUS = true;
+          //   //OTA_UPDATE_STATUS = false;
+          //   updateRequest.status = JOB_EXECUTION_SUCCEEDED;
+          //   updateRequest.statusDetails = "{\"exampleDetail\":\"a value appropriate for your successful job\"}";
+          } 
+          // else 
+          {
             system("/home/meican/ota/run.sh"); //运行固件包里面的脚本文件 
             return;
           } 

@@ -173,6 +173,9 @@ var mei_can_server_url string = "https://baseinfo.meican.com"
 //现场绑定token
 var siteBindToken string
 
+//固件更新 job id
+var ota_job_id string
+
 //菜单总长度
 var menuToalLength int = 0
 
@@ -230,6 +233,10 @@ func write_plate_read_msg_from_config_sqlite() {
 	deviceMsg.Status = int(cdevMsg.status)                  //设备状态
 	deviceMsg.RestaurantID = int(cdevMsg.restaurantID)      //餐厅ID
 
+	jobid := C.sqlite_read_versionBak_config_db() //获取固件跟新 job Id
+	ota_job_id = C.GoString(jobid)
+
+	debug_printf("固件更新jobid = %s \n", ota_job_id)
 	debug_printf("deviceMsg.HardVersion = %s \n", deviceMsg.HardVersion)
 	debug_printf("deviceMsg.Version = %s \n", deviceMsg.Version)
 	debug_printf("deviceMsg.VersionBak = %s \n", deviceMsg.VersionBak)
@@ -241,9 +248,10 @@ func write_plate_read_msg_from_config_sqlite() {
 	debug_printf("deviceMsg.RestaurantID = %d \n", deviceMsg.RestaurantID)
 
 	if backUpAppFlag == false {
-		if strings.Compare(deviceMsg.Version, deviceMsg.VersionBak) == 0 {
-			debug_printf("版本一致无需上报\n")
-		} else {
+		// if strings.Compare(deviceMsg.Version, deviceMsg.VersionBak) == 0 {
+		// 	debug_printf("版本一致无需上报\n")
+		// } else
+		{
 			debug_printf("版本不一致需要上报固件更新结果\n")
 			if strings.Compare(version, deviceMsg.VersionBak) == 0 { //备份临时版本跟新启动的软件版本一致
 				C.set_flag_report_iot_update_ok(C.int(0))

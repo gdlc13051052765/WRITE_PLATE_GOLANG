@@ -833,11 +833,7 @@ int sqlite_update_versionBak_config_db(char *jobid)
   read_version_from_txt(ver);
   debug_print("version = %s \n", ver);
 
-  if(strcmp(ver, verBak) == 0) {
-    debug_print("已是最新版本无需更新\n");
-    return 0xff;
-  }
-
+  
   /* 创建基础信息数据库 */
   //err = sqlite3_open("/home/meican/base_config.db",&config_db);
   err = sqlite3_open_v2("/home/meican/base_config.db", &config_db, SQLITE_OPEN_READWRITE, NULL);
@@ -850,6 +846,11 @@ int sqlite_update_versionBak_config_db(char *jobid)
   debug_print("tempdata = %s \n", tempdata);
   err = sqlite3_exec(config_db, tempdata, NULL, NULL, &zErrMsg);
   sqlite3_close_v2(config_db);
+
+  if(strcmp(ver, verBak) == 0) {
+    debug_print("已是最新版本无需更新\n");
+    return 0xff;
+  }
   return err;
 }
 
